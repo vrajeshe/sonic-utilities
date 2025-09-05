@@ -2631,15 +2631,15 @@ def mode_set(ctx, mode_type):
     db = ValidatedConfigDBConnector(ctx.obj['db'])
     
     try:
-         fvs = {
+        fvs = {
              'mode': mode_type,
              }
-         db.set_entry('TEAMD', "GLOBAL", fvs)
-         click.secho(f"[WARNING] mode = {mode_type} is configured. "
+        db.set_entry('TEAMD', "GLOBAL", fvs)
+        click.secho(f"[WARNING] mode = {mode_type} is configured. "
                             "Please restart the teamd docker to take effect.")
     except (ValueError, AttributeError) as e:
-         # Improved error message with the actual error
-         ctx.fail(f"Failed to set mode: {str(e)}")
+        # Improved error message with the actual error
+        ctx.fail(f"Failed to set mode: {str(e)}")
 
 @portchannel.command('add')
 @click.argument('portchannel_name', metavar='<portchannel_name>', required=True)

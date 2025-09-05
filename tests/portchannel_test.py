@@ -286,7 +286,7 @@ class TestPortChannel(object):
        # Try both 'multi-process' and 'multi_process' to diagnose the issue
       try:
           # Option 1: Using hyphen
-         result = runner.invoke(config.config.commands["portchannel"].commands["mode"].commands["set"], ["--help"])
+          result = runner.invoke(config.config.commands["portchannel"].commands["mode"].commands["set"], ["--help"])
       except KeyError:
           try:
               # Option 2: Using underscore
