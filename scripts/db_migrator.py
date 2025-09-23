@@ -1266,16 +1266,21 @@ class DBMigrator():
         self.set_version('version_202305_01')
         return 'version_202305_01'
 
+    def check_has_sonic_dhcpv4_relay_flag(self):
+        device_metadata_table = self.configDB.get_table("DEVICE_METADATA")
+        dhcp_relay_feature = device_metadata_table.get("localhost", {})
+        if dhcp_relay_feature.get("has_sonic_dhcpv4_relay") == "True":
+            return True
+        return False
+
     def version_202305_01(self):
         """
         Version 202305_01.
         This is current last erversion for 202305 branch
         """
         log.log_info('Handling version_202305_01')
-        feature_table = self.configDB.get_table("FEATURE")
-        dhcp_relay_feature = feature_table.get("dhcp_relay", {})
-        if dhcp_relay_feature.get("has_sonic_dhcpv4_relay") == "True":
-            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay() due to FEATURE|dhcp_relay")
+        if self.check_has_sonic_dhcpv4_relay_flag():
+            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay()")
             self.migrate_dhcp_servers_to_dhcpv4_relay()
 
         self.set_version('version_202311_01')
@@ -1291,10 +1296,8 @@ class DBMigrator():
         self.migrate_dns_nameserver()
 
         self.migrate_sflow_table()
-        feature_table = self.configDB.get_table("FEATURE")
-        dhcp_relay_feature = feature_table.get("dhcp_relay", {})
-        if dhcp_relay_feature.get("has_sonic_dhcpv4_relay") == "True":
-            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay() due to FEATURE|dhcp_relay")
+        if self.check_has_sonic_dhcpv4_relay_flag():
+            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay()")
             self.migrate_dhcp_servers_to_dhcpv4_relay()
 
         self.set_version('version_202311_02')
@@ -1307,10 +1310,8 @@ class DBMigrator():
         log.log_info('Handling version_202311_02')
         # Update GNMI table
         self.migrate_gnmi()
-        feature_table = self.configDB.get_table("FEATURE")
-        dhcp_relay_feature = feature_table.get("dhcp_relay", {})
-        if dhcp_relay_feature.get("has_sonic_dhcpv4_relay") == "True":
-            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay() due to FEATURE|dhcp_relay")
+        if self.check_has_sonic_dhcpv4_relay_flag():
+            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay()")
             self.migrate_dhcp_servers_to_dhcpv4_relay()
 
         self.set_version('version_202311_03')
@@ -1322,10 +1323,8 @@ class DBMigrator():
         This is current last erversion for 202311 branch
         """
         log.log_info('Handling version_202311_03')
-        feature_table = self.configDB.get_table("FEATURE")
-        dhcp_relay_feature = feature_table.get("dhcp_relay", {})
-        if dhcp_relay_feature.get("has_sonic_dhcpv4_relay") == "True":
-            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay() due to FEATURE|dhcp_relay")
+        if self.check_has_sonic_dhcpv4_relay_flag():
+            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay()")
             self.migrate_dhcp_servers_to_dhcpv4_relay()
 
         self.set_version('version_202405_01')
@@ -1336,10 +1335,8 @@ class DBMigrator():
         Version 202405_01.
         """
         log.log_info('Handling version_202405_01')
-        feature_table = self.configDB.get_table("FEATURE")
-        dhcp_relay_feature = feature_table.get("dhcp_relay", {})
-        if dhcp_relay_feature.get("has_sonic_dhcpv4_relay") == "True":
-            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay() due to FEATURE|dhcp_relay")
+        if self.check_has_sonic_dhcpv4_relay_flag():
+            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay()")
             self.migrate_dhcp_servers_to_dhcpv4_relay()
 
         self.set_version('version_202405_02')
@@ -1350,10 +1347,8 @@ class DBMigrator():
         Version 202405_02.
         """
         log.log_info('Handling version_202405_02')
-        feature_table = self.configDB.get_table("FEATURE")
-        dhcp_relay_feature = feature_table.get("dhcp_relay", {})
-        if dhcp_relay_feature.get("has_sonic_dhcpv4_relay") == "True":
-            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay() due to FEATURE|dhcp_relay")
+        if self.check_has_sonic_dhcpv4_relay_flag():
+            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay()")
             self.migrate_dhcp_servers_to_dhcpv4_relay()
 
         self.migrate_ipinip_tunnel()
@@ -1365,6 +1360,10 @@ class DBMigrator():
         Version 202411_01.
         """
         log.log_info('Handling version_202411_01')
+        if self.check_has_sonic_dhcpv4_relay_flag():
+            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay()")
+            self.migrate_dhcp_servers_to_dhcpv4_relay()
+
         self.set_version('version_202411_02')
         return 'version_202411_02'
 
@@ -1373,6 +1372,10 @@ class DBMigrator():
         Version 202411_02.
         """
         log.log_info('Handling version_202411_02')
+        if self.check_has_sonic_dhcpv4_relay_flag():
+            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay()")
+            self.migrate_dhcp_servers_to_dhcpv4_relay()
+
         self.set_version('version_202505_01')
         return 'version_202505_01'
 
@@ -1382,6 +1385,10 @@ class DBMigrator():
         master branch until 202505 branch is created.
         """
         log.log_info('Handling version_202505_01')
+        if self.check_has_sonic_dhcpv4_relay_flag():
+            log.log_info("Triggering migrate_dhcp_servers_to_dhcpv4_relay()")
+            self.migrate_dhcp_servers_to_dhcpv4_relay()
+
         self.migrate_flex_counter_delay_status_removal()
         return None
 
