@@ -362,6 +362,47 @@ class TestLacpKeyMigrator(object):
         assert dbmgtr.configDB.get_table('PORTCHANNEL') == expected_db.cfgdb.get_table('PORTCHANNEL')
         assert dbmgtr.configDB.get_table('VERSIONS') == expected_db.cfgdb.get_table('VERSIONS')
 
+
+class TestDhcpRelayKeyMigrator(object):
+    @classmethod
+    def setup_class(cls):
+        os.environ['UTILITIES_UNIT_TESTING'] = "2"
+
+    @classmethod
+    def teardown_class(cls):
+        os.environ['UTILITIES_UNIT_TESTING'] = "0"
+        dbconnector.dedicated_dbs['CONFIG_DB'] = None
+
+    def test_dhcp_relay_key_migrator(self):
+        import db_migrator
+        dbmgtr = db_migrator.DBMigrator(None)
+        print("CONFIG_DB keys:", dbmgtr.configDB.get_table('VLAN'))
+        print("DEVICE_METADATA:", dbmgtr.configDB.get_entry('DEVICE_METADATA', 'localhost'))
+        entry = dbmgtr.configDB.get_entry('DEVICE_METADATA', 'localhost') or {}
+        entry['has_sonic_dhcpv4_relay'] = 'True'
+        dbmgtr.configDB.set_entry('DEVICE_METADATA', 'localhost', entry)
+        dbmgtr.configDB.set_entry('VLAN', 'Vlan20', {
+                    'dhcp_servers': ['192.160.20.100'],
+                    'vlanid': '20'
+        })
+        dbmgtr.configDB.set_entry('VLAN', 'Vlan21', {
+                    'dhcp_servers': ['192.160.20.100'],
+                    'vlanid': '21'
+                    })
+        dbmgtr.configDB.set_entry('VLAN', 'Vlan80', {
+                    'dhcp_servers': ['19.16.20.10'],
+                    'vlanid': '80'
+                    })
+        dbmgtr.configDB.set_entry('VERSIONS', 'DATABASE', {
+                    'VERSION': 'version_202305_01'
+                    })
+        dbmgtr.configDB.set_entry('VLAN', 'Vlan90', {'vlanid': '90'})
+        dbmgtr.migrate()
+        dhcpv4_table = dbmgtr.configDB.get_table('DHCPV4_RELAY')
+        assert dbmgtr.configDB.get_entry('DEVICE_METADATA', 'localhost')['has_sonic_dhcpv4_relay'] == 'True'
+        assert dhcpv4_table.get('Vlan20')['dhcpv4_servers'] == ['192.160.20.100']
+        assert dhcpv4_table.get('Vlan80')['dhcpv4_servers'] == ['19.16.20.10']
+
 class TestDnsNameserverMigrator(object):
     @classmethod
     def setup_class(cls):
